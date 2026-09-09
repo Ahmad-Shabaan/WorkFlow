@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="15.1.3" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="MediatR" Version="14.2.0" />
+    <PackageReference Include="OneOf" Version="3.0.271" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Projects\Commands\HoldProject\" />
+    <Folder Include="Features\Projects\Commands\UpdateProject\" />
+    <Folder Include="Features\Projects\Commands\ResumeProject\" />
+    <Folder Include="Features\Projects\EventHandlers\" />
+    <Folder Include="Features\Tasks\Commands\CancelTask\" />
+    <Folder Include="Features\Tasks\Commands\SubmitForReviewTask\" />
+    <Folder Include="Features\Tasks\EventHandlers\" />
+    <Folder Include="Features\Tasks\Specifications\" />
+    <Folder Include="Interfaces\Caching\" />
+  </ItemGroup>
+
+</Project>

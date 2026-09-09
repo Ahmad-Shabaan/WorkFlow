@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Entities\WishlistAggregate\**" />
+    <EmbeddedResource Remove="Entities\WishlistAggregate\**" />
+    <None Remove="Entities\WishlistAggregate\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\ProjectAggregate\Events\" />
+  </ItemGroup>
+
+</Project>
