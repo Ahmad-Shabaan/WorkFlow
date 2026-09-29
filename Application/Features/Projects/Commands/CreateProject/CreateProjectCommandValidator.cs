@@ -24,6 +24,9 @@ namespace Application.Features.Projects.Commands.CreateProject
             RuleFor(p => p.EndDate)
                 .NotEmpty().WithMessage("End date is required.")
                 .GreaterThanOrEqualTo(p => p.StartDate).WithMessage("End date cannot be earlier than start date.");
+
+            RuleFor(p => p.ManagerId)
+                 .NotEmpty().WithMessage("Manager is required.");
         }
     }
 }

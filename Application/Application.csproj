@@ -18,14 +18,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Authentication\EventHandlers\" />
+    <Folder Include="Features\Authentication\Mapping\" />
+    <Folder Include="Features\Authentication\Specifications\" />
+    <Folder Include="Features\Comments\EventHandlers\" />
+    <Folder Include="Features\Comments\Mapping\" />
     <Folder Include="Features\Projects\Commands\HoldProject\" />
-    <Folder Include="Features\Projects\Commands\UpdateProject\" />
     <Folder Include="Features\Projects\Commands\ResumeProject\" />
     <Folder Include="Features\Projects\EventHandlers\" />
     <Folder Include="Features\Tasks\Commands\CancelTask\" />
     <Folder Include="Features\Tasks\Commands\SubmitForReviewTask\" />
     <Folder Include="Features\Tasks\EventHandlers\" />
-    <Folder Include="Features\Tasks\Specifications\" />
     <Folder Include="Interfaces\Caching\" />
   </ItemGroup>
 

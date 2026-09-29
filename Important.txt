@@ -1,0 +1,34 @@
+    /*
+
+     ============================================================================
+     ============================================================================
+     ============================================================================
+
+            You can test end points from this link  =>>  https://f4bdpyxlqm.apidog.io/  <<==
+
+     ============================================================================
+     ============================================================================
+     ============================================================================
+
+
+     */
+
+
+
+
+
+-- 
+
+### Repository Interface Placement
+
+Repository interfaces are intentionally placed in the **Application layer** rather than the **Domain layer**. The Domain layer should remain focused on business rules, entities, value objects, and domain behavior, without taking dependencies on persistence abstractions that are not required by the domain itself.
+
+In this design, repositories are primarily used by Application use cases/handlers to retrieve and persist data. Therefore, defining their contracts in Application keeps the abstractions close to the consumers that actually depend on them, while Infrastructure provides the implementations.
+
+This approach is also used by various real-world and open-source projects, so placing repository interfaces in Application is a valid Clean Architecture variation and does not break the dependency rule or the existing architecture.
+
+The dependency flow remains:
+
+Domain → Application → Infrastructure
+
+Infrastructure depends on Application to implement the repository contracts, while Application depends only on abstractions and does not depend on EF Core or other persistence implementations.

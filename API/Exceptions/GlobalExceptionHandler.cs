@@ -1,7 +1,9 @@
 ﻿using Domain.Exceptions;
 using FluentValidation;
+using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Authentication;
 
 namespace API.Exceptions
 {
@@ -22,7 +24,25 @@ namespace API.Exceptions
                 },
                 DomainException dx => new ProblemDetails()
                 {
-                    Title = "Domain Error",
+                    Title = "Break Rules",
+                    Detail = dx.Message,
+                    Status = StatusCodes.Status400BadRequest
+                },
+                InvalidCredentialException _ => new ProblemDetails()
+                {
+                    Title = "Invalid Credentials",
+                    Detail = "Email or password is incorrect.",
+                    Status = StatusCodes.Status401Unauthorized
+                },
+                NotFoundException dx => new ProblemDetails()
+                {
+                    Title = "Not Found",
+                    Detail = dx.Message,
+                    Status = StatusCodes.Status404NotFound
+                },
+                OperationFailedException dx => new ProblemDetails()
+                {
+                    Title = "Operation failed",
                     Detail = dx.Message,
                     Status = StatusCodes.Status400BadRequest
                 },

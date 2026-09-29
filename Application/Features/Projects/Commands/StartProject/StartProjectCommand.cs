@@ -5,7 +5,7 @@ using OneOf.Types;
 
 namespace Application.Features.Projects.Commands.StartProject
 {
-    public sealed record StartProjectCommand(Guid ProjectId) : IRequest<OneOf<Success, NotFoundError>>
+    public sealed record StartProjectCommand(Guid ProjectId) : IRequest<OneOf<Success, NotFoundError,ForbiddenError>>
     {
     }
 }

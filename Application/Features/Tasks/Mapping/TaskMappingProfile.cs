@@ -1,6 +1,6 @@
 ﻿using Application.Features.Tasks.DTOs;
 using AutoMapper;
-using ProjectTask = Domain.Entities.ProjectAggregate.Task;
+using Task = Domain.Entities.Task;
 
 namespace Application.Features.Tasks.Mapping
 {
@@ -8,7 +8,7 @@ namespace Application.Features.Tasks.Mapping
     {
         public TaskMappingProfile()
         {
-            CreateMap<ProjectTask, TaskDto>()
+            CreateMap<Task, TaskDto>()
             .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => src.TaskStatus.ToString()));
         }
     }

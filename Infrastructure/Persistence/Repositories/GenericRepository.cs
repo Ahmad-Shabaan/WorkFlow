@@ -1,13 +1,12 @@
 ﻿using Application.Interfaces.Persistence;
 using Application.Specifications;
-using Domain.Common;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly AppDbContext _context;
         private readonly DbSet<T> _dbSet;
@@ -22,7 +21,7 @@ namespace Infrastructure.Persistence.Repositories
         public void Add(T item) => _dbSet.Add(item);
 
 
-        public Task BulkDelete(ISpecification<T> specification, CancellationToken cancellationToken = default)
+        public System.Threading.Tasks.Task BulkDelete(ISpecification<T> specification, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -32,15 +31,12 @@ namespace Infrastructure.Persistence.Repositories
             _dbSet.Remove(item);
         }
 
-        public Task<bool> Exists(ISpecification<T> spec, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<bool> Exists(ISpecification<T> specification, CancellationToken cancellationToken = default)
+            => _specificationEvaluator.GetQuery(specification, _dbSet.AsQueryable()).AnyAsync(cancellationToken);
+
 
         public async Task<T?> Get(int id, CancellationToken cancellationToken = default)
         => await _dbSet.FindAsync(id, cancellationToken);
-        public async Task<T?> GetByPublicId(Guid publicId, CancellationToken cancellationToken = default)
-            => await _dbSet.FirstOrDefaultAsync(e => e.PublicId == publicId, cancellationToken);
 
 
         public Task<T?> Get(ISpecification<T> specification, CancellationToken cancellationToken = default)
@@ -51,41 +47,28 @@ namespace Infrastructure.Persistence.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<T?> Get(Guid publicId, CancellationToken cancellationToken = default)
-        {
-            return await _dbSet.Where(e => e.PublicId == publicId).AsNoTracking().FirstOrDefaultAsync(cancellationToken);
-        }
+        public async Task<IReadOnlyList<T>> GetAll(CancellationToken cancellationToken = default)
+         => await _dbSet.ToListAsync(cancellationToken);
 
-        public Task<IReadOnlyList<T>> GetAll(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<IReadOnlyList<T>> GetAll(ISpecification<T> spec, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IReadOnlyList<T>> GetAll(ISpecification<T> spec, CancellationToken cancellationToken = default)
+        => await _specificationEvaluator.GetQuery(spec, _dbSet.AsQueryable()).ToListAsync(cancellationToken);
 
         public Task<IReadOnlyList<TResult>> GetAll<TResult>(IProjectionSpecification<T, TResult> spec, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int> GetCount(CancellationToken cancellationToken = default)
+        public async Task<int> GetCount(CancellationToken cancellationToken = default)
+            => await _dbSet.CountAsync(cancellationToken);
+
+
+        public async Task<int> GetCount(ISpecification<T> specification, CancellationToken cancellationToken = default)
+        => await _specificationEvaluator.GetQuery(specification, _dbSet.AsQueryable()).CountAsync(cancellationToken);
+
+        public void Update(T item)
         {
-            throw new NotImplementedException();
+            _dbSet.Update(item);
         }
-
-        public Task<int> GetCount(ISpecification<T> specification, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(T item, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-
     }
 }

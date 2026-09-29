@@ -1,4 +1,5 @@
-﻿using Domain.Entities.ProjectAggregate;
+﻿using Domain.Entities;
+using Infrastructure.Persistence.Entities;
 using Infrastructure.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,6 +14,13 @@ namespace Infrastructure.Persistence.Configurations
                 .WithMany(t => t.Comments)
                 .HasForeignKey(c => c.TaskId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+
+            builder.HasOne<ApplicationUser>()
+                .WithMany(u => u.Comments)
+                .HasForeignKey(c => c.AuthorId)
+                .OnDelete(DeleteBehavior.NoAction);
+                
         }
     }
 }

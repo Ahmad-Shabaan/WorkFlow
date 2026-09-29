@@ -5,9 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public class UnitOfWork(AppDbContext context, IProjectRepository projectRepository, IServiceProvider serviceProvider) : IUnitOfWork
+    public class UnitOfWork(AppDbContext context, IProjectRepository projectRepository,ITaskRepository taskRepository, IServiceProvider serviceProvider) : IUnitOfWork
     {
         public IProjectRepository ProjectRepository { get; } = projectRepository;
+        public ITaskRepository TaskRepository { get; } = taskRepository;
 
         private readonly Dictionary<Type, object> _repositories = [];
         public async Task<int> Complete(CancellationToken cancellationToken)
@@ -21,7 +22,7 @@ namespace Infrastructure.Persistence.Repositories
             context.Dispose();
         }
 
-        public IGenericRepository<Entity> Repository<Entity>() where Entity : BaseAggregateRoot
+        public IGenericRepository<Entity> Repository<Entity>() where Entity : class
         {
             var type = typeof(Entity);
             if (!_repositories.TryGetValue(type, out var repository))

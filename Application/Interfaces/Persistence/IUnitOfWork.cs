@@ -10,8 +10,9 @@ namespace Application.Interfaces.Persistence
     public interface IUnitOfWork : IDisposable
     {
         IProjectRepository ProjectRepository { get; }
+        ITaskRepository TaskRepository { get; }
 
-        public IGenericRepository<Entity> Repository<Entity>() where Entity : BaseAggregateRoot;
+        public IGenericRepository<Entity> Repository<Entity>() where Entity : class; 
         public Task<int> Complete(CancellationToken cancellationToken);
 
     }

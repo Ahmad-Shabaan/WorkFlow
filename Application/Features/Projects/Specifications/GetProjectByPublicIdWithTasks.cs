@@ -1,5 +1,6 @@
 ﻿using Application.Specifications;
-using Domain.Entities.ProjectAggregate;
+using Domain.Entities;
+
 namespace Application.Features.Projects.Specifications
 {
     public class GetProjectByPublicIdWithTasks : BaseSpecification<Project>

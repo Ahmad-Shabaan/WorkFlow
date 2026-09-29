@@ -1,7 +1,8 @@
 ﻿using Application.Features.Projects.DTOs;
 using Application.Features.Tasks.DTOs;
 using AutoMapper;
-using Domain.Entities.ProjectAggregate;
+using Domain.Entities;
+
 namespace Application.Features.Projects.Mapping
 {
     public class ProjectMappingProfile : Profile
@@ -11,6 +12,7 @@ namespace Application.Features.Projects.Mapping
             CreateMap<Project, ProjectDto>()
                 .ForMember(dest => dest.ProjectStatus, opt => opt.MapFrom(src => src.ProjectStatus.ToString()))
                 .ForMember(dest => dest.Tasks, opt => opt.MapFrom(src => src.Tasks));
+
         }
     }
 }

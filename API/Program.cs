@@ -9,12 +9,29 @@ using BookHavenAPI.Errors;
 using Infrastructure;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 namespace API
 {
+
+
+    /*
+
+     ============================================================================
+     ============================================================================
+     ============================================================================
+
+            You can test end points from this link  =>>  https://f4bdpyxlqm.apidog.io/  <<==
+
+     ============================================================================
+     ============================================================================
+     ============================================================================
+
+
+     */
     public class Program
     {
         public static async Task Main(string[] args)
@@ -56,17 +73,9 @@ namespace API
                 options.SubstituteApiVersionInUrl = true; //  it replaces the {version} placeholder in the route template with the actual version number.
             });
 
-            // allow dependency injection for db context        
-            builder.Services.AddDbContext<AppDbContext>
-                (options => options.UseSqlServer(builder.Configuration.GetConnectionString("WorkFlow") ?? throw new InvalidOperationException("Connection string 'WorkFlow' not found.")));
-
-            builder.Services.AddScoped<IDbConnection>((sp) => 
-                                                    new SqlConnection(builder.Configuration.GetConnectionString("WorkFlow") ??
-                                                    throw new InvalidOperationException("Connection string 'WorkFlow' not found.")));
-            
             // register Application services
             builder.Services.AddApplicationServices();
-            builder.Services.AddInfrastructureServices();
+            builder.Services.AddInfrastructureServices(builder.Configuration);
             // allow dependency injection for unit of work
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -94,7 +103,7 @@ namespace API
                 options.AddPolicy("CorsPolicy", policy =>
                 {
 
-                    policy.WithOrigins("https://book-wise-ecru.vercel.app", "https://localhost:5173")  // React origin ClientUrl
+                    policy.WithOrigins("https://f4bdpyxlqm.apidog.io", "https://localhost:5173")  // React origin ClientUrl
                      .AllowAnyHeader()
                      .AllowAnyMethod()
                      .AllowCredentials();
@@ -119,11 +128,13 @@ namespace API
             {
                 //create obj from context (this code clr will run it to create context)
                 var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                await context.Database.MigrateAsync(); // to apply mirgations
-                                                       // seeding data
-                                                       //await BookHavenDbContextSeeding.SeedAsync(context, loggerFactory.CreateLogger<BookHavenDbContextSeeding>());
-
-
+                if (context.Database.GetPendingMigrations().Any())
+                {
+                    await context.Database.MigrateAsync();
+                }
+                // seeding data
+               var seeder = scope.ServiceProvider.GetRequiredService<Seed>();
+                await seeder.Seeder();
             }
             catch (Exception ex)
             {

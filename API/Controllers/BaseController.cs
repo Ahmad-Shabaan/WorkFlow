@@ -1,6 +1,6 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-namespace BookHavenAPI.Controllers
+namespace API.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]

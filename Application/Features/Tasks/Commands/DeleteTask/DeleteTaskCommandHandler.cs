@@ -2,7 +2,7 @@
 using Application.Errors;
 using Application.Features.Projects.Specifications;
 using Application.Interfaces.Persistence;
-using Domain.Entities.ProjectAggregate;
+using Domain.Entities;
 using MediatR;
 using OneOf;
 using OneOf.Types;
