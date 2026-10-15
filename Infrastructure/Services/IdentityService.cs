@@ -44,7 +44,7 @@ namespace Infrastructure.Services
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new OperationFailedException($"Failed to assign role: {errors}");
+                throw new OperationFailedException($"Failed to register: {errors}");
             }
 
             // give new users default role "employee"

@@ -6,12 +6,13 @@ using Application.Specifications;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using OneOf;
 using OneOf.Types;
 using TaskStatus = Domain.Enums.TaskStatus;
 namespace Application.Features.Tasks.Commands.AssignToTask
 {
-    internal class AssignToTaskCommandHandler(IUnitOfWork unitOfWork, IIdentityService identityService, ICurrentUserService currentUserService) : IRequestHandler<AssignToTaskCommand, OneOf<Success, UnauthorizedError, NotFoundError, ForbiddenError, ConflictError>>
+    public class AssignToTaskCommandHandler(IUnitOfWork unitOfWork, IIdentityService identityService, ICurrentUserService currentUserService) : IRequestHandler<AssignToTaskCommand, OneOf<Success, UnauthorizedError, NotFoundError, ForbiddenError, ConflictError>>
     {
         async System.Threading.Tasks.Task<OneOf<Success, UnauthorizedError, NotFoundError, ForbiddenError, ConflictError>> IRequestHandler<AssignToTaskCommand, OneOf<Success, UnauthorizedError, NotFoundError, ForbiddenError, ConflictError>>.Handle(AssignToTaskCommand request, CancellationToken cancellationToken)
         {
@@ -32,14 +33,12 @@ namespace Application.Features.Tasks.Commands.AssignToTask
             if (project.ManagerId != currentUserId) // not manager who try to assing user to taks
                 return AuthenticationErrors.Forbidden;
 
-
             var userInfo = await identityService.GetUser(request.UserId);
             if (userInfo is null)
                 return AuthenticationErrors.UserNotFound;
 
             if (!userInfo.Roles.Any(r => r == UserRoles.Employee.ToString()))
-                return TaskErrors.UserNotEmployee; 
-
+                return TaskErrors.UserNotEmployee;
 
             var spec = new GetRecordsByCriteriaSpecification<TaskAssignment>(x => x.TaskId == task.Id && x.UserId == userInfo.Id); // ta.userid = userid 
             var exists = await unitOfWork.Repository<TaskAssignment>().Exists(spec, cancellationToken);

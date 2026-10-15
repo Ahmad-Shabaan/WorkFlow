@@ -87,8 +87,8 @@ namespace Domain.Entities
         }
         internal void Complete()
         {
-            if (TaskStatus != TaskStatus.InProgress && TaskStatus != TaskStatus.InReview)
-                throw new InvalidOperation("Task can only be completed if it is in the 'InProgress' or 'InReview' status.");
+            if (TaskStatus != TaskStatus.Todo && TaskStatus != TaskStatus.InProgress && TaskStatus != TaskStatus.InReview)
+                throw new InvalidOperation("Task can only be completed if it is in the 'Todo' or 'InProgress' or 'InReview' status.");
             TaskStatus = TaskStatus.Completed;
         }
         internal void Cancel()

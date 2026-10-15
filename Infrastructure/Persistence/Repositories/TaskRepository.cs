@@ -29,6 +29,17 @@ namespace Infrastructure.Persistence.Repositories
             var result = await _context.Database.GetDbConnection().QueryAsync<Task>(command);
             return result.ToList();
         }
+        public async Task<IEnumerable<Task>> GetOverdueTasks(CancellationToken cancellationToken)
+        {
+            string sql = """
+                SELECT * 
+                FROM Tasks
+                WHERE EndDate < @CurrentTime AND TaskStatus != 5 And TaskStatus != 6
+                """;
+            var command = new CommandDefinition(sql, new { CurrentTime = DateTime.UtcNow }, cancellationToken: cancellationToken);
+            var result = await _context.Database.GetDbConnection().QueryAsync<Task>(command);
+            return result.ToList();
+        }
 
         public async Task<Task?> GetByPublicId(Guid publicId, CancellationToken cancellationToken = default)
          => await _dbSet.FirstOrDefaultAsync(e => e.PublicId == publicId, cancellationToken);

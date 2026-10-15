@@ -4,14 +4,13 @@ using Application.Errors;
 using Application.Features.Tasks.DTOs;
 using Application.Interfaces.Persistence;
 using Application.Specifications;
-using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using OneOf;
 
 namespace Application.Features.Tasks.Queries.GetTaskById
 {
-    public class GetTaskByIdQueryHandler(IIdentityService identityService, IUnitOfWork unitOfWork, ITaskRepository taskRepository, IMapper mapper) : IRequestHandler<GetTaskByIdQuery, OneOf<TaskResponseDto, NotFoundError>>
+    public class GetTaskByIdQueryHandler(IIdentityService identityService, IUnitOfWork unitOfWork, ITaskRepository taskRepository) : IRequestHandler<GetTaskByIdQuery, OneOf<TaskResponseDto, NotFoundError>>
     {
         public async Task<OneOf<TaskResponseDto, NotFoundError>> Handle(GetTaskByIdQuery request, CancellationToken cancellationToken)
         {

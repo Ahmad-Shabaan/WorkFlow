@@ -8,5 +8,6 @@ namespace Application.Interfaces.Persistence
         Task<IEnumerable<Task>> GetAllAsync(CancellationToken cancellationToken);
         Task<Task?> GetByPublicId(Guid publicId, CancellationToken cancellationToken = default);
         Task<Task?> GetTaskByIdAsync(Guid taskId, CancellationToken cancellationToken);
+        Task<IEnumerable<Task>> GetOverdueTasks(CancellationToken cancellationToken);
     }
 }

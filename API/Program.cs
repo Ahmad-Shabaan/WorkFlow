@@ -1,18 +1,24 @@
 ﻿using API.Exceptions;
+using API.Filters;
 using API.options;
 using Application;
+using Application.Interfaces.BackgroundJobs.Hangfire;
 using Application.Interfaces.Persistence;
 using Application.Specifications;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using BookHavenAPI.Errors;
+using Hangfire;
 using Infrastructure;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Persistence.Seed;
+using Infrastructure.Services.BackgroundJobs.Hangfire;
+using Infrastructure.Services.BackgroundJobs.Quartz;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 using System.Data;
 namespace API
 {
@@ -37,6 +43,46 @@ namespace API
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddHangfire(config =>
+            {
+                config.UseSimpleAssemblyNameTypeSerializer();
+                config.UseRecommendedSerializerSettings();
+                config.UseSqlServerStorage(builder.Configuration.GetConnectionString("WorkFlow"));
+                // Global config for retry
+                //config.UseFilter(
+                //   new AutomaticRetryAttribute
+                //   {
+                //       Attempts = 3,
+                //       DelaysInSeconds = new[] { 10, 30, 60 }
+                //   });
+
+            });
+            builder.Services.AddHangfireServer();
+
+            // qurtz
+            builder.Services.AddQuartz(opt =>
+            {
+                opt.UsePersistentStore(s =>
+                {
+                    s.UseSqlServer(builder.Configuration.GetConnectionString("WorkFlow")!);
+                    s.UseProperties = true;
+                    s.UseSystemTextJsonSerializer(); //check this later
+                });
+                var jobKey = new JobKey("OverdueTasksJob");
+                opt.AddJob<OverdueTasksJob>(jobKey)
+                .AddTrigger(trigger => trigger.WithIdentity("OverdueTasksTrigger").ForJob(jobKey)
+                .StartNow()
+                //.StartAt(DateBuilder.FutureDate(10, IntervalUnit.Second)) // if need delay
+                .WithSimpleSchedule(s => s.WithIntervalInMinutes(5).RepeatForever())
+                //.EndAt(DateBuilder.FutureDate(1, IntervalUnit.Day)) // if need end after 1 day
+                );
+            });
+            builder.Services.AddQuartzHostedService(opt =>
+            {
+                opt.WaitForJobsToComplete = true;
+            });
+
 
             builder.Services.AddProblemDetails();
 
@@ -84,6 +130,9 @@ namespace API
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
+            // allow dependency injection for background job seeding
+            builder.Services.AddScoped<TaskNotificationJob>();
+            builder.Services.AddScoped<ITaskNotificationScheduler, HangfireTaskNotificationEnqueuer>();
 
             // Get API Model state validation errors
             builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -133,7 +182,7 @@ namespace API
                     await context.Database.MigrateAsync();
                 }
                 // seeding data
-               var seeder = scope.ServiceProvider.GetRequiredService<Seed>();
+                var seeder = scope.ServiceProvider.GetRequiredService<Seed>();
                 await seeder.Seeder();
             }
             catch (Exception ex)
@@ -177,6 +226,7 @@ namespace API
             app.UseCors("CorsPolicy");
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions() { Authorization = [new HangfireDashboardAuthorizationFilter()] });
             app.MapControllers();
 
             app.Run();

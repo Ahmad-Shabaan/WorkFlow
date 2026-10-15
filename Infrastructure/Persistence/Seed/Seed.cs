@@ -23,7 +23,7 @@ namespace Infrastructure.Persistence.Seed
             "Manager",
             "Employee"
         };
-            
+
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))

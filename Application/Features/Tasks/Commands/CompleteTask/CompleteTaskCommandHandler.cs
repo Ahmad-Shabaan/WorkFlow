@@ -1,6 +1,7 @@
 ﻿using Application.Common.Errors;
 using Application.Errors;
 using Application.Features.Projects.Specifications;
+using Application.Interfaces.BackgroundJobs.Hangfire;
 using Application.Interfaces.Persistence;
 using Domain.Entities;
 using MediatR;
@@ -10,7 +11,7 @@ using OneOf.Types;
 
 namespace Application.Features.Tasks.Commands.CompleteTask
 {
-    public class CompleteTaskCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CompleteTaskCommand, OneOf<Success, NotFoundError>>
+    public class CompleteTaskCommandHandler(IUnitOfWork unitOfWork, ITaskNotificationScheduler taskNotificationScheduler) : IRequestHandler<CompleteTaskCommand, OneOf<Success, NotFoundError>>
     {
         public async Task<OneOf<Success, NotFoundError>> Handle(CompleteTaskCommand request, CancellationToken cancellationToken)
         {
@@ -21,6 +22,8 @@ namespace Application.Features.Tasks.Commands.CompleteTask
 
             project.CompleteTask(request.TaskId);
             await unitOfWork.Complete(cancellationToken);
+            
+            taskNotificationScheduler.EnqueueTaskCompletedNotification(request.TaskId, cancellationToken);
             return new Success();
         }
     }

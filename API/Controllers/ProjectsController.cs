@@ -42,6 +42,7 @@ namespace API.Controllers
         {
             var result = await mediator.Send(command);
             return result.Match<ActionResult>(id => CreatedAtRoute("GetProjectByPublicId", new { Id = id }, null),
+            //return result.Match<ActionResult>(id => Ok(id),
                 notFoundError => NotFound(notFoundError), conflictError => Conflict(conflictError), _ => Unauthorized());
         }
 

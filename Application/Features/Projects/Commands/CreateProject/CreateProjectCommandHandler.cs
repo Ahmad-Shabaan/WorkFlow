@@ -6,6 +6,7 @@ using Application.Specifications;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using OneOf;
 
 namespace Application.Features.Projects.Commands.CreateProject

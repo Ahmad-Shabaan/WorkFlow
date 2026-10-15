@@ -20,7 +20,7 @@ namespace API.Controllers
 
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] CreateTaskCommand command)
         {
@@ -49,15 +49,23 @@ namespace API.Controllers
 
         }
 
+        //[Authorize]
+        //[HttpPatch("{projectId:guid}/complete/{taskId:guid}")]
+        //public async Task<ActionResult> Complete([FromRoute] Guid projectId, [FromRoute] Guid taskId)
+        //{
+        //    var result = await mediatR.Send(new CompleteTaskCommand(projectId, taskId));
+        //    return result.Match<ActionResult>(_ => NoContent(), notFoundError => NotFound(notFoundError));
+        //}
+
         [Authorize]
-        [HttpPatch("{projectId:guid}/complete/{taskId:guid}")]
-        public async Task<ActionResult> Complete([FromRoute] Guid projectId, [FromRoute] Guid taskId)
+        [HttpPatch("complete-task")]
+        public async Task<ActionResult> Complete([FromBody] CompleteTaskCommand command )
         {
-            var result = await mediatR.Send(new CompleteTaskCommand(projectId, taskId));
+            var result = await mediatR.Send(command);
             return result.Match<ActionResult>(_ => NoContent(), notFoundError => NotFound(notFoundError));
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPatch("assign-employee")]
         public async Task<ActionResult> AssignEmployee(AssignToTaskCommand command)
         {
